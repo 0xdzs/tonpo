@@ -7,16 +7,33 @@ export default function TelegramOnly({
 }: {
   children: React.ReactNode;
 }) {
-  const [isTelegram, setIsTelegram] = useState(true);
+  const [isTelegram, setIsTelegram] = useState(false);
 
   useEffect(() => {
-    // Check if window.Telegram.WebApp exists
-    const isTelegramWebApp = Boolean(
-      typeof window !== 'undefined' &&
-      window.Telegram &&
-      window.Telegram.WebApp
-    );
-    setIsTelegram(isTelegramWebApp);
+    const checkTelegramWebApp = () => {
+      if (typeof window === 'undefined') return false;
+      
+      try {
+        // Check if we're in Telegram's WebApp environment
+        if (!window.Telegram?.WebApp) {
+          return false;
+        }
+
+        // Initialize WebApp
+        window.Telegram.WebApp.ready();
+        
+        // Additional check for Telegram environment
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        const isTelegramBrowser = userAgent.includes('telegram') || 
+                                 window.Telegram.WebApp.platform !== 'unknown';
+        
+        return isTelegramBrowser;
+      } catch (e) {
+        return false;
+      }
+    };
+
+    setIsTelegram(checkTelegramWebApp());
   }, []);
 
   if (!isTelegram) {
