@@ -1,5 +1,6 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import Navbar from '@/components/common/Navbar'
 import BackToTop from '@/components/common/BackToTop'
 import TelegramOnly from '@/components/TelegramOnly'
@@ -19,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script src="https://telegram.org/js/telegram-web-app.js" />
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
       </head>
       <body className={inter.className}>
         <TelegramOnly>
