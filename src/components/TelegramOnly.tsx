@@ -28,7 +28,7 @@ export default function TelegramOnly({
                                  window.Telegram.WebApp.platform !== 'unknown';
         
         return isTelegramBrowser;
-      } catch (_) {
+      } catch {
         return false;
       }
     };
