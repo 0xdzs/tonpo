@@ -1,5 +1,7 @@
 interface Window {
-  Telegram?: {
-    WebApp?: any;
-  }
+  Telegram: {
+    WebApp?: {
+      [key: string]: unknown;
+    };
+  };
 } 
