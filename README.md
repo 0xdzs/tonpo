@@ -1,5 +1,7 @@
 Tonpo - Fell the tempo of Ton
 
+![Tonpo Screenshot](public/screenshot.png)
+
 ## Getting Started
 
 First, run the development server:
