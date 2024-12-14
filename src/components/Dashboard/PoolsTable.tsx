@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Pool } from '@/types/pools';
 import { Text } from '@tremor/react';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
