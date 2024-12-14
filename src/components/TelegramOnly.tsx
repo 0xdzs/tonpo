@@ -10,8 +10,12 @@ export default function TelegramOnly({
   const [isTelegram, setIsTelegram] = useState(true);
 
   useEffect(() => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isTelegramWebApp = Boolean(window.Telegram?.WebApp) || userAgent.includes('telegram');
+    // Check if window.Telegram.WebApp exists
+    const isTelegramWebApp = Boolean(
+      typeof window !== 'undefined' &&
+      window.Telegram &&
+      window.Telegram.WebApp
+    );
     setIsTelegram(isTelegramWebApp);
   }, []);
 
