@@ -3,19 +3,45 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Telegram Mini App Colors */
+  --tg-theme-bg-color: var(--background);
+  --tg-theme-text-color: var(--foreground);
+  --tg-theme-hint-color: #999999;
+  --tg-theme-link-color: #2481cc;
+  --tg-theme-button-color: #2481cc;
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-secondary-bg-color: #f1f1f1;
+  --tg-theme-section-bg-color: #ffffff;
+  --tg-theme-section-header-text-color: #6c7883;
+  --tg-theme-subtitle-text-color: #707579;
+  --tg-theme-accent-text-color: #2481cc;
+  --tg-theme-destructive-text-color: #df3f40;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
 }
+
+.card {
+  background: var(--tg-theme-section-bg-color);
+  border-radius: 12px;
+}
+
+.sort-button {
+  background: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+}
+
+.sort-button.active {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+}
+
+.subtitle {
+  color: var(--tg-theme-subtitle-text-color);
+}
+
+.section-header {
+  color: var(--tg-theme-section-header-text-color);
+} 
