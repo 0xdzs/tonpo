@@ -2,11 +2,15 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import PoolsTable from '@/components/Dashboard/PoolsTable';
+import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
+import { filterAndCombinePools } from '@/utils/poolFormatters';
+import { fetchPaginatedPools } from '@/utils/fetchPools';
 
+type Tab = 'top' | 'new';
 type SortField = 'volume' | 'fdv';
 type SortDirection = 'asc' | 'desc';
 
@@ -19,7 +23,10 @@ interface CombinedPool extends Omit<Pool, 'attributes'> {
   };
 }
 
+const NETWORK = 'ton';
+
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<Tab>('top');
   const [pools, setPools] = useState<CombinedPool[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -30,73 +37,18 @@ export default function Home() {
   const fetchPools = useCallback(async () => {
     setLoading(true);
     try {
-      const allPools: Pool[] = [];
-      const pageSize = 50;
-      const totalPages = 2;
-
-      for (let page = 1; page <= totalPages; page++) {
-        const response = await fetch(
-          `https://api.geckoterminal.com/api/v2/networks/ton/pools?page=${page}&page_size=${pageSize}`, 
-          {
-            cache: 'no-store',
-            headers: {
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache'
-            }
-          }
-        );
-        const data = await response.json();
-        allPools.push(...data.data);
-      }
+      const config = {
+        pageSize: 50,
+        totalPages: 2,
+        network: 'ton'
+      };
       
-      // Filter out USD₮/TON pairs
-      const filteredPools = allPools.filter((pool: Pool) => {
-        const poolName = pool.attributes.name.toLowerCase();
-        return !(
-          poolName.includes('usd₮') || 
-          poolName.includes('usdt') ||
-          poolName.includes('tether')
-        );
-      });
-
-      // Combine volumes for same pairs
-      const poolMap = new Map<string, CombinedPool>();
+      const allPools = await fetchPaginatedPools(
+        `https://api.geckoterminal.com/api/v2/networks/ton/pools`,
+        config
+      );
       
-      filteredPools.forEach((pool: Pool) => {
-        // Extract base pair name without fee tier
-        const poolName = pool.attributes.name;
-        let [token1, token2] = poolName.split('/').map(t => t.trim().split(' ')[0]);
-        
-        // Ensure TON is always the quote token (second position)
-        if (token1.toLowerCase() === 'ton') {
-          [token1, token2] = [token2, token1];
-        }
-        
-        const pairKey = `${token1} / ${token2}`;
-        
-        if (poolMap.has(pairKey)) {
-          const existingPool = poolMap.get(pairKey)!;
-          const existingVolume = parseFloat(existingPool.attributes.combined_volume_usd.h24);
-          const newVolume = parseFloat(pool.attributes.volume_usd.h24);
-          
-          existingPool.attributes.combined_volume_usd.h24 = (existingVolume + newVolume).toString();
-          existingPool.attributes.name = pairKey;
-        } else {
-          poolMap.set(pairKey, {
-            ...pool,
-            attributes: {
-              ...pool.attributes,
-              name: pairKey,
-              combined_volume_usd: {
-                h24: pool.attributes.volume_usd.h24
-              },
-              fee_tiers: []
-            }
-          });
-        }
-      });
-
-      const combinedPools = Array.from(poolMap.values());
+      const combinedPools = filterAndCombinePools(allPools);
       const newDataString = JSON.stringify(combinedPools);
       
       if (newDataString !== lastData) {
@@ -111,6 +63,30 @@ export default function Home() {
     }
   }, [lastData]);
 
+  const fetchNewPools = useCallback(async () => {
+    setLoading(true);
+    try {
+      const config = {
+        pageSize: 50,
+        totalPages: 2,
+        network: 'ton'
+      };
+      
+      const allPools = await fetchPaginatedPools(
+        `https://api.geckoterminal.com/api/v2/networks/ton/new_pools`,
+        config
+      );
+      
+      const combinedPools = filterAndCombinePools(allPools);
+      setPools(combinedPools);
+      setLastUpdated(Date.now());
+    } catch (error) {
+      console.error('Error fetching new pools:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchPools();
   }, [fetchPools]);
@@ -124,45 +100,91 @@ export default function Home() {
     }
   };
 
+  const handleTabChange = (newTab: Tab) => {
+    setActiveTab(newTab);
+    if (newTab === 'new') {
+      fetchNewPools();
+    } else {
+      fetchPools();
+    }
+  };
+
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2 overflow-x-auto">
-          <PoolsTable.SortButton 
-            field="volume" 
-            label="Volume"
-            currentSort={sortField}
-            direction={sortDirection}
-            onSort={handleSort}
-          />
-          <button
-            onClick={() => handleSort('fdv')}
-            className={`px-4 py-2 rounded-full text-sm flex items-center gap-1 whitespace-nowrap
-              ${sortField === 'fdv' ? 'active' : ''} sort-button`}
-          >
-            FDV
-            {sortField === 'fdv' && (
-              sortDirection === 'asc' ? 
-                <ArrowUpIcon className="h-3 w-3" /> : 
-                <ArrowDownIcon className="h-3 w-3" />
-            )}
-          </button>
-        </div>
-        <div className="flex flex-col items-end gap-2">
-          <RefreshButton onRefresh={fetchPools} isLoading={loading} />
-          <LastUpdated timestamp={lastUpdated} isLoading={loading} />
-        </div>
-      </div>
-      {loading && pools.length === 0 ? (
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
-        </div>
+      <DashboardTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      
+      {activeTab === 'top' ? (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex gap-4 pl-4">
+              <PoolsTable.SortButton 
+                field="volume" 
+                label="Volume"
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <PoolsTable.SortButton 
+                field="fdv" 
+                label="FDV"
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <RefreshButton onRefresh={fetchPools} isLoading={loading} />
+              <LastUpdated timestamp={lastUpdated} isLoading={loading} />
+            </div>
+          </div>
+          {loading && pools.length === 0 ? (
+            <div className="flex items-center justify-center min-h-[50vh]">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
+            </div>
+          ) : (
+            <PoolsTable 
+              pools={pools} 
+              sortField={sortField}
+              sortDirection={sortDirection}
+            />
+          )}
+        </>
       ) : (
-        <PoolsTable 
-          pools={pools} 
-          sortField={sortField}
-          sortDirection={sortDirection}
-        />
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex gap-4 pl-4">
+              <PoolsTable.SortButton 
+                field="volume" 
+                label="Volume"
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <PoolsTable.SortButton 
+                field="fdv" 
+                label="FDV"
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
+              <LastUpdated timestamp={lastUpdated} isLoading={loading} />
+            </div>
+          </div>
+          {loading && pools.length === 0 ? (
+            <div className="flex items-center justify-center min-h-[50vh]">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
+            </div>
+          ) : (
+            <PoolsTable 
+              pools={pools} 
+              sortField={sortField}
+              sortDirection={sortDirection}
+            />
+          )}
+        </>
       )}
     </div>
   );

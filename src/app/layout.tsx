@@ -20,7 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        {process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true' ? (
+          <script src="/mocks/telegram-web-app.js" />
+        ) : (
+          <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        )}
       </head>
       <body className={inter.className}>
         <TelegramOnly>

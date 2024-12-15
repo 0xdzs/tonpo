@@ -11,18 +11,20 @@ export default function TelegramOnly({
 
   useEffect(() => {
     const checkTelegramWebApp = () => {
+      // Check environment variable instead of NODE_ENV
+      if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
+        return true;
+      }
+
       if (typeof window === 'undefined') return false;
       
       try {
-        // Check if we're in Telegram's WebApp environment
         if (!window.Telegram?.WebApp) {
           return false;
         }
 
-        // Initialize WebApp
         window.Telegram.WebApp.ready();
         
-        // Additional check for Telegram environment
         const userAgent = window.navigator.userAgent.toLowerCase();
         const isTelegramBrowser = userAgent.includes('telegram') || 
                                  window.Telegram.WebApp.platform !== 'unknown';

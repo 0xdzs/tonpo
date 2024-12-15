@@ -48,4 +48,13 @@ export interface Pool {
     quote_token: { data: TokenData };
     dex: { data: DexData };
   };
+}
+
+export interface CombinedPool extends Omit<Pool, 'attributes'> {
+  attributes: Pool['attributes'] & {
+    combined_volume_usd: {
+      h24: string;
+    };
+    fee_tiers: string[];
+  };
 } 
