@@ -6,7 +6,6 @@ import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
 import { fetchPaginatedPools } from '@/utils/fetchPools';
 
