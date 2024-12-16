@@ -7,7 +7,6 @@ import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
-import { fetchPaginatedPools } from '@/utils/fetchPools';
 
 type Tab = 'top' | 'new';
 type SortField = 'volume' | 'fdv';
