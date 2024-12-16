@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 type Tab = 'top' | 'new';
 
 interface DashboardTabsProps {
