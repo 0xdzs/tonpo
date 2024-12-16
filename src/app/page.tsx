@@ -22,8 +22,6 @@ interface CombinedPool extends Omit<Pool, 'attributes'> {
   };
 }
 
-const NETWORK = 'ton';
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('top');
   const [pools, setPools] = useState<CombinedPool[]>([]);
