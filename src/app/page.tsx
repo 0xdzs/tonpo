@@ -48,18 +48,9 @@ export default function Home() {
   const fetchNewPools = useCallback(async () => {
     setLoading(true);
     try {
-      const config = {
-        pageSize: 50,
-        totalPages: 2,
-        network: 'ton'
-      };
-      
-      const allPools = await fetchPaginatedPools(
-        `https://api.geckoterminal.com/api/v2/networks/ton/new_pools`,
-        config
-      );
-      
-      const combinedPools = filterAndCombinePools(allPools);
+      const response = await fetch('/api/pools/new');
+      const data = await response.json();
+      const combinedPools = filterAndCombinePools(data.data);
       setPools(combinedPools);
       setLastUpdated(Date.now());
     } catch (error) {
@@ -70,8 +61,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
-
     const fetchData = async () => {
       if (activeTab === 'top') {
         await fetchPools();
@@ -85,7 +74,7 @@ export default function Home() {
     return () => {
       setPools([]);
     };
-  }, [activeTab, fetchPools, fetchNewPools, loading]);
+  }, [activeTab, fetchPools, fetchNewPools]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
