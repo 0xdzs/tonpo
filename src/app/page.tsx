@@ -27,7 +27,6 @@ export default function Home() {
   const [pools, setPools] = useState<CombinedPool[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
-  const [lastData, setLastData] = useState<string>('');
   const [sortField, setSortField] = useState<SortField>('volume');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -94,7 +93,6 @@ export default function Home() {
     
     return () => {
       setPools([]);
-      setLastData('');
     };
   }, [activeTab, fetchPools, fetchNewPools, loading]);
 
