@@ -11,7 +11,7 @@ export default function TelegramOnly({
 
   useEffect(() => {
     const checkTelegramWebApp = () => {
-      // Check environment variable instead of NODE_ENV
+      // Always return true if mock is enabled
       if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
         return true;
       }
@@ -19,23 +19,28 @@ export default function TelegramOnly({
       if (typeof window === 'undefined') return false;
       
       try {
-        if (!window.Telegram?.WebApp) {
-          return false;
+        // Check if Telegram WebApp object exists
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.ready();
+          return true;
         }
 
-        window.Telegram.WebApp.ready();
-        
+        // Fallback check for Telegram browser
         const userAgent = window.navigator.userAgent.toLowerCase();
-        const isTelegramBrowser = userAgent.includes('telegram') || 
-                                 window.Telegram.WebApp.platform !== 'unknown';
+        return userAgent.includes('telegram');
         
-        return isTelegramBrowser;
-      } catch {
+      } catch (error) {
+        console.warn('Error checking Telegram environment:', error);
         return false;
       }
     };
 
-    setIsTelegram(checkTelegramWebApp());
+    // Add a small delay to ensure Telegram WebApp is initialized
+    const timer = setTimeout(() => {
+      setIsTelegram(checkTelegramWebApp());
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   if (!isTelegram) {
