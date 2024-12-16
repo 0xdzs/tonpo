@@ -18,9 +18,16 @@ export default function TelegramOnly({
       if (typeof window === 'undefined') return false;
       
       try {
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.ready();
-          return true;
+        const webApp = window.Telegram?.WebApp;
+        if (webApp) {
+          // Check if we have initData and platform - these are always present in real Telegram WebApps
+          const hasInitData = !!webApp.initData;
+          const hasPlatform = !!webApp.platform;
+          
+          if (hasInitData && hasPlatform) {
+            webApp.ready();
+            return true;
+          }
         }
         return false;
       } catch (error) {
@@ -29,7 +36,12 @@ export default function TelegramOnly({
       }
     };
 
-    setIsTelegram(checkTelegramWebApp());
+    // Add a small delay to ensure Telegram WebApp is fully initialized
+    const timer = setTimeout(() => {
+      setIsTelegram(checkTelegramWebApp());
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   if (!isTelegram) {
@@ -38,11 +50,13 @@ export default function TelegramOnly({
         <div className="text-center p-8 bg-white rounded-lg shadow-lg">
           <h1 className="text-xl font-bold mb-4">Telegram Only</h1>
           <p className="text-gray-600">
-            This app is only available through Telegram.
+            Please open this app in Telegram.
           </p>
           <a 
             href="https://t.me/tonpo_bot" 
             className="mt-4 inline-block text-blue-500 hover:text-blue-600"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Open in Telegram
           </a>
