@@ -11,7 +11,6 @@ export default function TelegramOnly({
 
   useEffect(() => {
     const checkTelegramWebApp = () => {
-      // Always return true if mock is enabled
       if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
         return true;
       }
@@ -19,34 +18,35 @@ export default function TelegramOnly({
       if (typeof window === 'undefined') return false;
       
       try {
-        // Check if Telegram WebApp object exists
         if (window.Telegram?.WebApp) {
           window.Telegram.WebApp.ready();
           return true;
         }
-
-        // Fallback check for Telegram browser
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        return userAgent.includes('telegram');
-        
+        return false;
       } catch (error) {
         console.warn('Error checking Telegram environment:', error);
         return false;
       }
     };
 
-    // Add a small delay to ensure Telegram WebApp is initialized
-    const timer = setTimeout(() => {
-      setIsTelegram(checkTelegramWebApp());
-    }, 100);
-
-    return () => clearTimeout(timer);
+    setIsTelegram(checkTelegramWebApp());
   }, []);
 
   if (!isTelegram) {
     return (
-      <div className="wrong-place">
-        You&apos;re in a wrong place ;(
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+          <h1 className="text-xl font-bold mb-4">Telegram Only</h1>
+          <p className="text-gray-600">
+            This app is only available through Telegram.
+          </p>
+          <a 
+            href="https://t.me/tonpo_bot" 
+            className="mt-4 inline-block text-blue-500 hover:text-blue-600"
+          >
+            Open in Telegram
+          </a>
+        </div>
       </div>
     );
   }
