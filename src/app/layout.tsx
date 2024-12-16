@@ -1,6 +1,5 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import Navbar from '@/components/common/Navbar'
 import BackToTop from '@/components/common/BackToTop'
 import TelegramOnly from '@/components/TelegramOnly'

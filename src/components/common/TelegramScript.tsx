@@ -12,13 +12,13 @@ export default function TelegramScript() {
       {process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true' ? (
         <Script 
           src="/mocks/telegram-web-app.js" 
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           onError={handleError}
         />
       ) : (
         <Script 
           src="https://telegram.org/js/telegram-web-app.js" 
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           onError={handleError}
         />
       )}
