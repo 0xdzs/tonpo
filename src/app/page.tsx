@@ -22,6 +22,7 @@ interface CombinedPool extends Omit<Pool, 'attributes'> {
 }
 
 export default function Home() {
+  const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('top');
   const [pools, setPools] = useState<CombinedPool[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +61,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const isTelegram = !!window.Telegram?.WebApp;
+    setIsTelegramWebApp(isTelegram);
+    
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isTelegramWebApp) return;
+
     const fetchData = async () => {
       if (activeTab === 'top') {
         await fetchPools();
@@ -73,7 +85,7 @@ export default function Home() {
     return () => {
       setPools([]);
     };
-  }, [activeTab, fetchPools, fetchNewPools]);
+  }, [activeTab, fetchPools, fetchNewPools, isTelegramWebApp]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {

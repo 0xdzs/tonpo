@@ -1,5 +1,5 @@
 interface Window {
-  Telegram: {
+  Telegram?: {
     WebApp: {
       ready(): void;
       expand(): void;
