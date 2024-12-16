@@ -46,19 +46,14 @@ export default function Home() {
       );
       
       const combinedPools = filterAndCombinePools(allPools);
-      const newDataString = JSON.stringify(combinedPools);
-      
-      if (newDataString !== lastData) {
-        setPools(combinedPools);
-        setLastData(newDataString);
-        setLastUpdated(Date.now());
-      }
+      setPools(combinedPools);
+      setLastUpdated(Date.now());
     } catch (error) {
       console.error('Error fetching pools:', error);
     } finally {
       setLoading(false);
     }
-  }, [lastData]);
+  }, []);
 
   const fetchNewPools = useCallback(async () => {
     setLoading(true);
@@ -85,6 +80,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (loading) return;
+
     const fetchData = async () => {
       if (activeTab === 'top') {
         await fetchPools();
@@ -99,7 +96,7 @@ export default function Home() {
       setPools([]);
       setLastData('');
     };
-  }, [activeTab, fetchPools, fetchNewPools]);
+  }, [activeTab, fetchPools, fetchNewPools, loading]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
