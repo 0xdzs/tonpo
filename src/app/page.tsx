@@ -33,18 +33,9 @@ export default function Home() {
   const fetchPools = useCallback(async () => {
     setLoading(true);
     try {
-      const config = {
-        pageSize: 50,
-        totalPages: 2,
-        network: 'ton'
-      };
-      
-      const allPools = await fetchPaginatedPools(
-        `https://api.geckoterminal.com/api/v2/networks/ton/pools`,
-        config
-      );
-      
-      const combinedPools = filterAndCombinePools(allPools);
+      const response = await fetch('/api/pools');
+      const data = await response.json();
+      const combinedPools = filterAndCombinePools(data.data);
       setPools(combinedPools);
       setLastUpdated(Date.now());
     } catch (error) {
