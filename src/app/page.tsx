@@ -85,8 +85,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    fetchPools();
-  }, [fetchPools]);
+    const fetchData = async () => {
+      if (activeTab === 'top') {
+        await fetchPools();
+      } else {
+        await fetchNewPools();
+      }
+    };
+
+    fetchData();
+    
+    return () => {
+      setPools([]);
+      setLastData('');
+    };
+  }, [activeTab]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -97,14 +110,12 @@ export default function Home() {
     }
   };
 
-  const handleTabChange = (newTab: Tab) => {
+  const handleTabChange = useCallback((newTab: Tab) => {
+    if (loading) return; // Prevent tab change while loading
     setActiveTab(newTab);
-    if (newTab === 'new') {
-      fetchNewPools();
-    } else {
-      fetchPools();
-    }
-  };
+    setPools([]);
+    setLoading(true);
+  }, [loading]);
 
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">

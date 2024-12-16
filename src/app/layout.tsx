@@ -4,6 +4,7 @@ import Script from 'next/script'
 import Navbar from '@/components/common/Navbar'
 import BackToTop from '@/components/common/BackToTop'
 import TelegramOnly from '@/components/TelegramOnly'
+import TelegramScript from '@/components/common/TelegramScript'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,11 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true' ? (
-          <Script src="/mocks/telegram-web-app.js" strategy="beforeInteractive" />
-        ) : (
-          <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
-        )}
+        <TelegramScript />
       </head>
       <body className={inter.className}>
         <TelegramOnly>
