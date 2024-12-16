@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const response = await fetch(
       'https://api.geckoterminal.com/api/v2/networks/ton/pools',
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (_) { // Using underscore to ignore the unused parameter
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch pools' },
       { status: 500 }
