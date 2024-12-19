@@ -4,7 +4,13 @@ interface Window {
       ready(): void;
       expand(): void;
       close(): void;
-      [key: string]: any;
+      requestFullscreen(): void;
+      exitFullscreen(): void;
+      isFullscreen: boolean;
+      onEvent(event: string, callback: () => void): void;
+      offEvent(event: string, callback: () => void): void;
+      initData?: string;
+      platform?: string;
     };
   };
 } 
