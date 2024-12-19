@@ -177,15 +177,13 @@ export default function Home() {
                 onSort={handleSort}
               />
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end gap-2">
               <FdvFilterButton 
                 showHighFdvOnly={showHighFdvOnly}
                 onToggle={() => setShowHighFdvOnly(!showHighFdvOnly)}
               />
-              <div className="flex flex-col items-end gap-2">
-                <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
-                <LastUpdated timestamp={lastUpdated} isLoading={loading} />
-              </div>
+              <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
+              <LastUpdated timestamp={lastUpdated} isLoading={loading} />
             </div>
           </div>
           {loading && pools.length === 0 ? (
