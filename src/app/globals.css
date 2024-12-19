@@ -93,17 +93,26 @@ body {
 }
 
 .pt-safe {
-  padding-top: max(16px, var(--sat));
+  padding-top: max(env(safe-area-inset-top), 48px);
 }
 
 .pb-safe {
-  padding-bottom: max(16px, var(--sab));
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
 }
 
 .pl-safe {
-  padding-left: max(16px, var(--sal));
+  padding-left: max(env(safe-area-inset-left), 16px);
 }
 
 .pr-safe {
-  padding-right: max(16px, var(--sar));
+  padding-right: max(env(safe-area-inset-right), 16px);
+}
+
+/* Add viewport height adjustment */
+.min-h-screen {
+  min-height: -webkit-fill-available;
+}
+
+html {
+  height: -webkit-fill-available;
 } 

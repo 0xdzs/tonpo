@@ -21,12 +21,13 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <TelegramScript />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className={`${inter.className} safe-area-inset`}>
         <TelegramOnly>
           <div className="pt-safe">
             <Navbar />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-4">
               {children}
             </main>
           </div>
