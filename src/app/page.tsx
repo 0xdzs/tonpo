@@ -7,6 +7,7 @@ import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
+import FdvFilterButton from '@/components/common/FdvFilterButton';
 
 type Tab = 'top' | 'new';
 type SortField = 'volumeFdvRatio' | 'fdv';
@@ -137,14 +138,10 @@ export default function Home() {
               />
             </div>
             <div className="flex flex-col items-end gap-2">
-              <button
-                onClick={() => setShowHighFdvOnly(!showHighFdvOnly)}
-                className={`px-4 py-2 rounded-full text-sm ${
-                  showHighFdvOnly ? 'bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)]' : 'text-[var(--tg-theme-hint-color)]'
-                }`}
-              >
-                FDV &gt; 10M
-              </button>
+              <FdvFilterButton 
+                showHighFdvOnly={showHighFdvOnly}
+                onToggle={() => setShowHighFdvOnly(!showHighFdvOnly)}
+              />
               <RefreshButton onRefresh={fetchPools} isLoading={loading} />
               <LastUpdated timestamp={lastUpdated} isLoading={loading} />
             </div>
@@ -181,14 +178,10 @@ export default function Home() {
               />
             </div>
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowHighFdvOnly(!showHighFdvOnly)}
-                className={`px-4 py-2 rounded-full text-sm ${
-                  showHighFdvOnly ? 'bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)]' : 'text-[var(--tg-theme-hint-color)]'
-                }`}
-              >
-                FDV &gt; 10M
-              </button>
+              <FdvFilterButton 
+                showHighFdvOnly={showHighFdvOnly}
+                onToggle={() => setShowHighFdvOnly(!showHighFdvOnly)}
+              />
               <div className="flex flex-col items-end gap-2">
                 <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
                 <LastUpdated timestamp={lastUpdated} isLoading={loading} />
