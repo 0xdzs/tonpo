@@ -9,6 +9,7 @@ export function useFullScreen() {
 
   const enterFullScreen = useCallback(() => {
     window.Telegram?.WebApp?.requestFullscreen();
+    
   }, []);
 
   const exitFullScreen = useCallback(() => {

@@ -4,6 +4,11 @@ window.Telegram = {
     expand: () => {},
     close: () => {},
     platform: 'macos',
+    requestFullscreen: () => {},
+    exitFullscreen: () => {},
+    isFullscreen: false,
+    onEvent: (event, callback) => {},
+    offEvent: (event, callback) => {},
     initData: '',
     initDataUnsafe: {},
     MainButton: {
