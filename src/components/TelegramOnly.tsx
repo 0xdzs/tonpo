@@ -7,6 +7,7 @@ export default function TelegramOnly({
 }: {
   children: React.ReactNode;
 }) {
+  const [isLoading, setIsLoading] = useState(true);
   const [isTelegram, setIsTelegram] = useState(false);
 
   useEffect(() => {
@@ -20,7 +21,6 @@ export default function TelegramOnly({
       try {
         const webApp = window.Telegram?.WebApp;
         if (webApp) {
-          // Check if we have initData and platform - these are always present in real Telegram WebApps
           const hasInitData = !!webApp.initData;
           const hasPlatform = !!webApp.platform;
           
@@ -36,13 +36,17 @@ export default function TelegramOnly({
       }
     };
 
-    // Add a small delay to ensure Telegram WebApp is fully initialized
     const timer = setTimeout(() => {
       setIsTelegram(checkTelegramWebApp());
+      setIsLoading(false);
     }, 100);
 
     return () => clearTimeout(timer);
   }, []);
+
+  if (isLoading) {
+    return null; // Return nothing while checking environment
+  }
 
   if (!isTelegram) {
     return (

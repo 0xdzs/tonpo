@@ -29,6 +29,7 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [sortField, setSortField] = useState<SortField>('volumeFdvRatio');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [showHighFdvOnly, setShowHighFdvOnly] = useState(false);
 
   const fetchPools = useCallback(async () => {
     setLoading(true);
@@ -107,6 +108,11 @@ export default function Home() {
     }
   };
 
+  const filterHighFdvPools = useCallback((pools: CombinedPool[]) => {
+    if (!showHighFdvOnly) return pools;
+    return pools.filter(pool => parseFloat(pool.attributes.fdv_usd || '0') >= 10_000_000);
+  }, [showHighFdvOnly]);
+
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
       <DashboardTabs activeTab={activeTab} onTabChange={handleTabChange} />
@@ -166,9 +172,19 @@ export default function Home() {
                 onSort={handleSort}
               />
             </div>
-            <div className="flex flex-col items-end gap-2">
-              <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
-              <LastUpdated timestamp={lastUpdated} isLoading={loading} />
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowHighFdvOnly(!showHighFdvOnly)}
+                className={`px-4 py-2 rounded-full text-sm ${
+                  showHighFdvOnly ? 'bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)]' : 'text-[var(--tg-theme-hint-color)]'
+                }`}
+              >
+                FDV &gt; 10M
+              </button>
+              <div className="flex flex-col items-end gap-2">
+                <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
+                <LastUpdated timestamp={lastUpdated} isLoading={loading} />
+              </div>
             </div>
           </div>
           {loading && pools.length === 0 ? (
@@ -177,7 +193,7 @@ export default function Home() {
             </div>
           ) : (
             <PoolsTable 
-              pools={pools} 
+              pools={filterHighFdvPools(pools)} 
               sortField={sortField}
               sortDirection={sortDirection}
             />
