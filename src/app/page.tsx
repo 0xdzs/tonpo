@@ -8,7 +8,6 @@ import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
 
-type Tab = 'top' | 'new';
 type SortField = 'volumeFdvRatio' | 'fdv';
 type SortDirection = 'asc' | 'desc';
 
@@ -23,7 +22,6 @@ interface CombinedPool extends Omit<Pool, 'attributes'> {
 
 export default function Home() {
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tab>('top');
   const [pools, setPools] = useState<CombinedPool[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -46,21 +44,6 @@ export default function Home() {
     }
   }, []);
 
-  const fetchNewPools = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/pools/new');
-      const data = await response.json();
-      const combinedPools = filterAndCombinePools(data.data);
-      setPools(combinedPools);
-      setLastUpdated(Date.now());
-    } catch (error) {
-      console.error('Error fetching new pools:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     const isTelegram = !!window.Telegram?.WebApp;
     setIsTelegramWebApp(isTelegram);
@@ -72,21 +55,16 @@ export default function Home() {
 
   useEffect(() => {
     if (!isTelegramWebApp) return;
-
-    const fetchData = async () => {
-      if (activeTab === 'top') {
-        await fetchPools();
-      } else {
-        await fetchNewPools();
-      }
-    };
-
-    fetchData();
-    
+    fetchPools();
     return () => {
       setPools([]);
     };
-  }, [activeTab, fetchPools, fetchNewPools, isTelegramWebApp]);
+  }, [fetchPools, isTelegramWebApp]);
+
+  const filterHighFdvPools = useCallback((pools: CombinedPool[]) => {
+    if (!showHighFdvOnly) return pools;
+    return pools.filter(pool => parseFloat(pool.attributes.fdv_usd || '0') >= 10_000_000);
+  }, [showHighFdvOnly]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -97,103 +75,44 @@ export default function Home() {
     }
   };
 
-  const handleTabChange = (newTab: Tab) => {
-    setActiveTab(newTab);
-    setPools([]);
-    setLoading(true);
-    if (newTab === 'new') {
-      fetchNewPools();
-    } else {
-      fetchPools();
-    }
-  };
-
-  const filterHighFdvPools = useCallback((pools: CombinedPool[]) => {
-    if (!showHighFdvOnly) return pools;
-    return pools.filter(pool => parseFloat(pool.attributes.fdv_usd || '0') >= 10_000_000);
-  }, [showHighFdvOnly]);
-
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
       <DashboardTabs 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange}
         showHighFdvOnly={showHighFdvOnly}
         onToggleFilter={() => setShowHighFdvOnly(!showHighFdvOnly)}
       />
-      
-      {activeTab === 'top' ? (
-        <>
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-4 pl-4">
-              <PoolsTable.SortButton 
-                field="volumeFdvRatio" 
-                label="Volume/FDV"
-                currentSort={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              />
-              <PoolsTable.SortButton 
-                field="fdv" 
-                label="FDV"
-                currentSort={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              />
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <RefreshButton onRefresh={fetchPools} isLoading={loading} />
-              <LastUpdated timestamp={lastUpdated} isLoading={loading} />
-            </div>
-          </div>
-          {loading && pools.length === 0 ? (
-            <div className="flex items-center justify-center min-h-[50vh]">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
-            </div>
-          ) : (
-            <PoolsTable 
-              pools={filterHighFdvPools(pools)} 
-              sortField={sortField}
-              sortDirection={sortDirection}
-            />
-          )}
-        </>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-4 pl-4">
+          <PoolsTable.SortButton 
+            field="volumeFdvRatio" 
+            label="Volume/FDV"
+            currentSort={sortField}
+            direction={sortDirection}
+            onSort={handleSort}
+          />
+          <PoolsTable.SortButton 
+            field="fdv" 
+            label="FDV"
+            currentSort={sortField}
+            direction={sortDirection}
+            onSort={handleSort}
+          />
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <RefreshButton onRefresh={fetchPools} isLoading={loading} />
+          <LastUpdated timestamp={lastUpdated} isLoading={loading} />
+        </div>
+      </div>
+      {loading && pools.length === 0 ? (
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
+        </div>
       ) : (
-        <>
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-4 pl-4">
-              <PoolsTable.SortButton 
-                field="volumeFdvRatio" 
-                label="Volume/FDV"
-                currentSort={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              />
-              <PoolsTable.SortButton 
-                field="fdv" 
-                label="FDV"
-                currentSort={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              />
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
-              <LastUpdated timestamp={lastUpdated} isLoading={loading} />
-            </div>
-          </div>
-          {loading && pools.length === 0 ? (
-            <div className="flex items-center justify-center min-h-[50vh]">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
-            </div>
-          ) : (
-            <PoolsTable 
-              pools={filterHighFdvPools(pools)} 
-              sortField={sortField}
-              sortDirection={sortDirection}
-            />
-          )}
-        </>
+        <PoolsTable 
+          pools={filterHighFdvPools(pools)} 
+          sortField={sortField}
+          sortDirection={sortDirection}
+        />
       )}
     </div>
   );
