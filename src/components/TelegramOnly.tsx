@@ -26,6 +26,7 @@ export default function TelegramOnly({
           
           if (hasInitData && hasPlatform) {
             webApp.ready();
+            webApp.requestFullscreen();
             return true;
           }
         }
@@ -45,7 +46,7 @@ export default function TelegramOnly({
   }, []);
 
   if (isLoading) {
-    return null; // Return nothing while checking environment
+    return null;
   }
 
   if (!isTelegram) {
@@ -69,5 +70,5 @@ export default function TelegramOnly({
     );
   }
 
-  return <>{children}</>;
+  return children;
 } 

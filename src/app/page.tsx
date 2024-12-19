@@ -5,7 +5,6 @@ import PoolsTable from '@/components/Dashboard/PoolsTable';
 import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
-import FullScreenButton from '@/components/common/FullScreenButton';
 import { Pool } from '@/types/pools';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
 
@@ -106,7 +105,6 @@ export default function Home() {
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex gap-2">
-            <FullScreenButton />
             <RefreshButton onRefresh={fetchPools} isLoading={loading} />
           </div>
           <LastUpdated timestamp={lastUpdated} isLoading={loading} />
