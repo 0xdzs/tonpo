@@ -7,7 +7,6 @@ import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
-import FdvFilterButton from '@/components/common/FdvFilterButton';
 
 type Tab = 'top' | 'new';
 type SortField = 'volumeFdvRatio' | 'fdv';
