@@ -9,7 +9,7 @@ import { Pool } from '@/types/pools';
 import { filterAndCombinePools } from '@/utils/poolFormatters';
 
 type Tab = 'top' | 'new';
-type SortField = 'volume' | 'fdv';
+type SortField = 'volumeFdvRatio' | 'fdv';
 type SortDirection = 'asc' | 'desc';
 
 interface CombinedPool extends Omit<Pool, 'attributes'> {
@@ -27,7 +27,7 @@ export default function Home() {
   const [pools, setPools] = useState<CombinedPool[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
-  const [sortField, setSortField] = useState<SortField>('volume');
+  const [sortField, setSortField] = useState<SortField>('volumeFdvRatio');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const fetchPools = useCallback(async () => {
@@ -116,8 +116,8 @@ export default function Home() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-4 pl-4">
               <PoolsTable.SortButton 
-                field="volume" 
-                label="Volume"
+                field="volumeFdvRatio" 
+                label="Volume/FDV"
                 currentSort={sortField}
                 direction={sortDirection}
                 onSort={handleSort}
@@ -152,8 +152,8 @@ export default function Home() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-4 pl-4">
               <PoolsTable.SortButton 
-                field="volume" 
-                label="Volume"
+                field="volumeFdvRatio" 
+                label="Volume/FDV"
                 currentSort={sortField}
                 direction={sortDirection}
                 onSort={handleSort}

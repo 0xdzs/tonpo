@@ -4,7 +4,7 @@ import { Pool } from '@/types/pools';
 import { Text } from '@tremor/react';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
 
-type SortField = 'volume' | 'fdv';
+type SortField = 'volumeFdvRatio' | 'fdv';
 type SortDirection = 'asc' | 'desc';
 
 interface SortButtonProps {
@@ -41,10 +41,10 @@ interface PoolsTableProps {
 export default function PoolsTable({ pools, sortField, sortDirection }: PoolsTableProps) {
   const sortPools = (a: Pool, b: Pool) => {
     switch (sortField) {
-      case 'volume':
-        return sortDirection === 'asc'
-          ? parseFloat(a.attributes.combined_volume_usd?.h24 || '0') - parseFloat(b.attributes.combined_volume_usd?.h24 || '0')
-          : parseFloat(b.attributes.combined_volume_usd?.h24 || '0') - parseFloat(a.attributes.combined_volume_usd?.h24 || '0');
+      case 'volumeFdvRatio':
+        const aRatio = parseFloat(a.attributes.combined_volume_usd?.h24 || '0') / parseFloat(a.attributes.fdv_usd || '1');
+        const bRatio = parseFloat(b.attributes.combined_volume_usd?.h24 || '0') / parseFloat(b.attributes.fdv_usd || '1');
+        return sortDirection === 'asc' ? aRatio - bRatio : bRatio - aRatio;
       case 'fdv':
         return sortDirection === 'asc'
           ? parseFloat(a.attributes.fdv_usd || '0') - parseFloat(b.attributes.fdv_usd || '0')
@@ -74,9 +74,9 @@ export default function PoolsTable({ pools, sortField, sortDirection }: PoolsTab
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Text className="text-sm subtitle">24h Volume</Text>
+                <Text className="text-sm subtitle">Volume/FDV</Text>
                 <Text className="font-medium">
-                  ${parseFloat(pool.attributes.combined_volume_usd?.h24 || '0').toLocaleString()}
+                  {(parseFloat(pool.attributes.combined_volume_usd?.h24 || '0') / parseFloat(pool.attributes.fdv_usd || '1')).toFixed(4)}
                 </Text>
               </div>
               <div className="text-right">
