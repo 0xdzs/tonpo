@@ -22,12 +22,14 @@ export default function RootLayout({
       <head>
         <TelegramScript />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} safe-area-inset`}>
         <TelegramOnly>
-          <Navbar />
-          <main className="container mx-auto px-4 py-8">
-            {children}
-          </main>
+          <div className="pt-safe">
+            <Navbar />
+            <main className="container mx-auto px-4 py-8">
+              {children}
+            </main>
+          </div>
         </TelegramOnly>
         <BackToTop />
       </body>
