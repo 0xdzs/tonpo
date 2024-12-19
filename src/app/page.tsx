@@ -116,7 +116,12 @@ export default function Home() {
 
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
-      <DashboardTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      <DashboardTabs 
+        activeTab={activeTab} 
+        onTabChange={handleTabChange}
+        showHighFdvOnly={showHighFdvOnly}
+        onToggleFilter={() => setShowHighFdvOnly(!showHighFdvOnly)}
+      />
       
       {activeTab === 'top' ? (
         <>
@@ -138,10 +143,6 @@ export default function Home() {
               />
             </div>
             <div className="flex flex-col items-end gap-2">
-              <FdvFilterButton 
-                showHighFdvOnly={showHighFdvOnly}
-                onToggle={() => setShowHighFdvOnly(!showHighFdvOnly)}
-              />
               <RefreshButton onRefresh={fetchPools} isLoading={loading} />
               <LastUpdated timestamp={lastUpdated} isLoading={loading} />
             </div>
@@ -178,10 +179,6 @@ export default function Home() {
               />
             </div>
             <div className="flex flex-col items-end gap-2">
-              <FdvFilterButton 
-                showHighFdvOnly={showHighFdvOnly}
-                onToggle={() => setShowHighFdvOnly(!showHighFdvOnly)}
-              />
               <RefreshButton onRefresh={fetchNewPools} isLoading={loading} />
               <LastUpdated timestamp={lastUpdated} isLoading={loading} />
             </div>
