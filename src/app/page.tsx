@@ -27,7 +27,7 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [sortField, setSortField] = useState<SortField>('volumeFdvRatio');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [showHighFdvOnly, setShowHighFdvOnly] = useState(false);
+  const [selectedFdvFilter, setSelectedFdvFilter] = useState<'1M' | '5M' | '10M' | null>(null);
 
   const fetchPools = useCallback(async () => {
     setLoading(true);
@@ -62,9 +62,14 @@ export default function Home() {
   }, [fetchPools, isTelegramWebApp]);
 
   const filterHighFdvPools = useCallback((pools: CombinedPool[]) => {
-    if (!showHighFdvOnly) return pools;
-    return pools.filter(pool => parseFloat(pool.attributes.fdv_usd || '0') >= 10_000_000);
-  }, [showHighFdvOnly]);
+    if (!selectedFdvFilter) return pools;
+    const thresholds = {
+      '1M': 1_000_000,
+      '5M': 5_000_000,
+      '10M': 10_000_000
+    };
+    return pools.filter(pool => parseFloat(pool.attributes.fdv_usd || '0') >= thresholds[selectedFdvFilter]);
+  }, [selectedFdvFilter]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -78,8 +83,8 @@ export default function Home() {
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
       <DashboardTabs 
-        showHighFdvOnly={showHighFdvOnly}
-        onToggleFilter={() => setShowHighFdvOnly(!showHighFdvOnly)}
+        selectedFdvFilter={selectedFdvFilter}
+        onFilterChange={setSelectedFdvFilter}
       />
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-4 pl-4">
