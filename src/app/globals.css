@@ -93,7 +93,7 @@ body {
 }
 
 .pt-safe {
-  padding-top: max(env(safe-area-inset-top), 48px);
+  padding-top: max(env(safe-area-inset-top), 64px);
 }
 
 .pb-safe {
