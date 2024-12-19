@@ -1,5 +1,3 @@
-type Tab = 'top';
-
 interface DashboardTabsProps {
   showHighFdvOnly: boolean;
   onToggleFilter: () => void;
