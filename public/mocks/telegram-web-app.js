@@ -7,8 +7,8 @@ window.Telegram = {
     requestFullscreen: () => {},
     exitFullscreen: () => {},
     isFullscreen: false,
-    onEvent: (event, callback) => {},
-    offEvent: (event, callback) => {},
+    onEvent: (_event, _callback) => {},
+    offEvent: (_event, _callback) => {},
     initData: '',
     initDataUnsafe: {},
     MainButton: {
