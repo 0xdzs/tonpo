@@ -26,7 +26,6 @@ export default function TelegramOnly({
           
           if (hasInitData && hasPlatform) {
             webApp.ready();
-            webApp.requestFullscreen();
             return true;
           }
         }

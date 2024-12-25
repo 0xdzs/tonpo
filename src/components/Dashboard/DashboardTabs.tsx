@@ -10,18 +10,13 @@ export default function DashboardTabs({
   onFilterChange 
 }: DashboardTabsProps) {
   return (
-    <div className="flex items-center gap-2 mb-4">
-      <div className="flex gap-2">
-        <div className="px-4 py-2 rounded-full text-sm bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)]">
-          Top Pools
-        </div>
-      </div>
+    <div className="flex items-center mb-4">
       <select
         value={selectedFdvFilter || ''}
         onChange={(e) => onFilterChange(e.target.value as FdvFilter || null)}
         className="px-3 py-1.5 rounded-full text-xs border border-[var(--tg-theme-button-color)] bg-transparent text-[var(--tg-theme-button-color)] appearance-none cursor-pointer"
       >
-        <option value="">All FDV</option>
+        <option value="">FDV Filter</option>
         <option value="1M">FDV &gt; 1M</option>
         <option value="5M">FDV &gt; 5M</option>
         <option value="10M">FDV &gt; 10M</option>

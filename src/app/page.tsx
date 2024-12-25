@@ -82,26 +82,34 @@ export default function Home() {
 
   return (
     <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
-      <DashboardTabs 
-        selectedFdvFilter={selectedFdvFilter}
-        onFilterChange={setSelectedFdvFilter}
-      />
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-4 pl-4">
-          <PoolsTable.SortButton 
-            field="volumeFdvRatio" 
-            label="Volume/FDV"
-            currentSort={sortField}
-            direction={sortDirection}
-            onSort={handleSort}
-          />
-          <PoolsTable.SortButton 
-            field="fdv" 
-            label="FDV"
-            currentSort={sortField}
-            direction={sortDirection}
-            onSort={handleSort}
-          />
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex flex-col gap-3">
+          <select
+            value={selectedFdvFilter || ''}
+            onChange={(e) => setSelectedFdvFilter(e.target.value as '1M' | '5M' | '10M' | null)}
+            className="px-3 py-1.5 w-[120px] border border-[var(--tg-theme-button-color)] bg-transparent text-[var(--tg-theme-button-color)] appearance-none cursor-pointer text-xs"
+          >
+            <option value="">FDV Filter</option>
+            <option value="1M">FDV &gt; 1M</option>
+            <option value="5M">FDV &gt; 5M</option>
+            <option value="10M">FDV &gt; 10M</option>
+          </select>
+          <div className="flex gap-2">
+            <PoolsTable.SortButton
+              field="volumeFdvRatio"
+              label="Volume/FDV"
+              currentSort={sortField}
+              direction={sortDirection}
+              onSort={handleSort}
+            />
+            <PoolsTable.SortButton
+              field="fdv"
+              label="FDV"
+              currentSort={sortField}
+              direction={sortDirection}
+              onSort={handleSort}
+            />
+          </div>
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex gap-2">
