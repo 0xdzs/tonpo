@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import PoolsTable from '@/components/Dashboard/PoolsTable';
-import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import RefreshButton from '@/components/common/RefreshButton';
 import LastUpdated from '@/components/common/LastUpdated';
 import { Pool } from '@/types/pools';
