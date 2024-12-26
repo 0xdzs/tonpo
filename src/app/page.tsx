@@ -20,7 +20,6 @@ interface CombinedPool extends Omit<Pool, 'attributes'> {
 }
 
 export default function Home() {
-  const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
   const [pools, setPools] = useState<CombinedPool[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -44,15 +43,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const isTelegram = !!window.Telegram?.WebApp;
-    setIsTelegramWebApp(isTelegram);
-    
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
     }
-    
     fetchPools();
-    
     return () => {
       setPools([]);
     };
