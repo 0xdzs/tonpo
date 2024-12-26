@@ -8,7 +8,10 @@ export async function POST(req: Request) {
     console.log('Webhook data:', JSON.stringify(data, null, 2));
 
     const bot = getBot();
-    console.log('Bot instance created');
+    if (!bot) {
+      console.error('Bot initialization failed');
+      return NextResponse.json({ ok: false, error: 'Bot initialization failed' });
+    }
 
     await bot.handleUpdate(data);
     console.log('Update handled successfully');
