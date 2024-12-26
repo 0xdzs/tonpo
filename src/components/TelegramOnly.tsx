@@ -20,28 +20,31 @@ export default function TelegramOnly({
       
       try {
         const webApp = window.Telegram?.WebApp;
-        if (webApp) {
-          const hasInitData = !!webApp.initData;
-          const hasPlatform = !!webApp.platform;
-          
-          if (hasInitData && hasPlatform) {
-            webApp.ready();
-            return true;
-          }
+        const hasWebApp = !!webApp;
+        const hasInitData = hasWebApp && !!webApp.initData;
+        const hasPlatform = hasWebApp && !!webApp.platform;
+        
+        if (hasWebApp && (hasInitData || hasPlatform)) {
+          webApp.ready();
+          return true;
         }
-        return false;
+
+        // Check if we're in Telegram's iframe
+        const isInTelegramFrame = window.location.href.includes('tg://') || 
+          window.location.href.includes('t.me/') ||
+          window !== window.parent;
+
+        return isInTelegramFrame;
       } catch (error) {
         console.warn('Error checking Telegram environment:', error);
         return false;
       }
     };
 
-    const timer = setTimeout(() => {
-      setIsTelegram(checkTelegramWebApp());
-      setIsLoading(false);
-    }, 100);
-
-    return () => clearTimeout(timer);
+    // Run check immediately without setTimeout
+    const isTelegramApp = checkTelegramWebApp();
+    setIsTelegram(isTelegramApp);
+    setIsLoading(!isTelegramApp);
   }, []);
 
   if (isLoading) {
