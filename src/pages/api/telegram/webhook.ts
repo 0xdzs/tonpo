@@ -1,24 +1,33 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Get bot token from environment variable
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
 if (!BOT_TOKEN) {
-  throw new Error('TELEGRAM_BOT_TOKEN is not set');
+  console.error('TELEGRAM_BOT_TOKEN is not set');
 }
 
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Allow POST method only
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    console.log('Received non-POST request:', req.method);
+    return res.status(200).json({ message: 'OK' }); // Return 200 for Telegram webhook verification
   }
 
   try {
     const { message } = req.body;
+    console.log('Received message:', message);
     
     if (message?.text === '/start') {
       const chatId = message.chat.id;
+      console.log('Processing /start command for chat:', chatId);
       
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,11 +47,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           parse_mode: 'HTML'
         }),
       });
+
+      const result = await response.json();
+      console.log('Telegram API response:', result);
+
+      if (!response.ok) {
+        throw new Error(`Telegram API error: ${JSON.stringify(result)}`);
+      }
     }
 
     res.status(200).json({ message: 'Success' });
   } catch (error) {
     console.error('Webhook error:', error);
-    res.status(500).json({ message: 'Error processing webhook' });
+    res.status(200).json({ error: error.message }); // Always return 200 to Telegram
   }
 } 
