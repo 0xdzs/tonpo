@@ -11,23 +11,46 @@ export default function TelegramOnly({
   const [isTelegram, setIsTelegram] = useState(false);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
-      setIsTelegram(true);
-      setIsLoading(false);
-      return;
-    }
-
-    if (typeof window !== 'undefined') {
-      const webApp = window.Telegram?.WebApp;
-      if (webApp) {
-        webApp.ready();
-        setIsTelegram(true);
+    const checkTelegramWebApp = () => {
+      if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
+        return true;
       }
-      setIsLoading(false);
+
+      if (typeof window === 'undefined') return false;
+
+      // Check if we're in Telegram's iframe
+      const isInTelegramFrame = 
+        window.location.href.includes('tg://') || 
+        window.location.href.includes('t.me/') ||
+        window !== window.parent ||
+        !!window.Telegram?.WebApp;
+
+      return isInTelegramFrame;
+    };
+
+    // Run check immediately
+    const isTelegramApp = checkTelegramWebApp();
+    setIsTelegram(isTelegramApp);
+    
+    // If we're in Telegram, call ready()
+    if (isTelegramApp && window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
     }
+    
+    setIsLoading(false);
   }, []);
 
-  if (!isTelegram && !isLoading) {
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
+      </div>
+    );
+  }
+
+  // Show Telegram-only message
+  if (!isTelegram) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg">
