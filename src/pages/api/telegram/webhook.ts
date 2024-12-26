@@ -1,6 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+// Get bot token from environment variable
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+
+if (!BOT_TOKEN) {
+  throw new Error('TELEGRAM_BOT_TOKEN is not set');
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
