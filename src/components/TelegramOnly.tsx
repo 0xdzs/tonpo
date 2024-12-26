@@ -11,47 +11,23 @@ export default function TelegramOnly({
   const [isTelegram, setIsTelegram] = useState(false);
 
   useEffect(() => {
-    const checkTelegramWebApp = () => {
-      if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
-        return true;
+    if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
+      setIsTelegram(true);
+      setIsLoading(false);
+      return;
+    }
+
+    if (typeof window !== 'undefined') {
+      const webApp = window.Telegram?.WebApp;
+      if (webApp) {
+        webApp.ready();
+        setIsTelegram(true);
       }
-
-      if (typeof window === 'undefined') return false;
-      
-      try {
-        const webApp = window.Telegram?.WebApp;
-        const hasWebApp = !!webApp;
-        const hasInitData = hasWebApp && !!webApp.initData;
-        const hasPlatform = hasWebApp && !!webApp.platform;
-        
-        if (hasWebApp && (hasInitData || hasPlatform)) {
-          webApp.ready();
-          return true;
-        }
-
-        // Check if we're in Telegram's iframe
-        const isInTelegramFrame = window.location.href.includes('tg://') || 
-          window.location.href.includes('t.me/') ||
-          window !== window.parent;
-
-        return isInTelegramFrame;
-      } catch (error) {
-        console.warn('Error checking Telegram environment:', error);
-        return false;
-      }
-    };
-
-    // Run check immediately without setTimeout
-    const isTelegramApp = checkTelegramWebApp();
-    setIsTelegram(isTelegramApp);
-    setIsLoading(!isTelegramApp);
+      setIsLoading(false);
+    }
   }, []);
 
-  if (isLoading) {
-    return null;
-  }
-
-  if (!isTelegram) {
+  if (!isTelegram && !isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg">

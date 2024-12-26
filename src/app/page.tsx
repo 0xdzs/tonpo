@@ -50,15 +50,13 @@ export default function Home() {
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
     }
-  }, []);
-
-  useEffect(() => {
-    if (!isTelegramWebApp) return;
+    
     fetchPools();
+    
     return () => {
       setPools([]);
     };
-  }, [fetchPools, isTelegramWebApp]);
+  }, [fetchPools]);
 
   const filterHighFdvPools = useCallback((pools: CombinedPool[]) => {
     if (!selectedFdvFilter) return pools;
