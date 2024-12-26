@@ -52,7 +52,6 @@ export async function POST(req: Request) {
   }
 }
 
-// Handle GET requests for webhook verification
 export async function GET() {
   return NextResponse.json({ ok: true });
 } 
