@@ -11,6 +11,9 @@ export default function TelegramOnly({
   const [isTelegram, setIsTelegram] = useState(false);
 
   useEffect(() => {
+    let checkAttempts = 0;
+    const maxAttempts = 10;
+
     const checkTelegramWebApp = () => {
       if (process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_MOCK === 'true') {
         return true;
@@ -18,29 +21,35 @@ export default function TelegramOnly({
 
       if (typeof window === 'undefined') return false;
 
-      // Check if we're in Telegram's iframe
-      const isInTelegramFrame = 
-        window.location.href.includes('tg://') || 
-        window.location.href.includes('t.me/') ||
-        window !== window.parent ||
-        !!window.Telegram?.WebApp;
+      const webApp = window.Telegram?.WebApp;
+      if (webApp) {
+        webApp.ready();
+        return true;
+      }
 
-      return isInTelegramFrame;
+      return false;
     };
 
-    // Run check immediately
-    const isTelegramApp = checkTelegramWebApp();
-    setIsTelegram(isTelegramApp);
-    
-    // If we're in Telegram, call ready()
-    if (isTelegramApp && window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-    }
-    
-    setIsLoading(false);
+    const attemptCheck = () => {
+      const isTelegramApp = checkTelegramWebApp();
+      
+      if (isTelegramApp) {
+        setIsTelegram(true);
+        setIsLoading(false);
+        return;
+      }
+
+      checkAttempts++;
+      if (checkAttempts < maxAttempts) {
+        setTimeout(attemptCheck, 100);
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    attemptCheck();
   }, []);
 
-  // Show loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -49,7 +58,6 @@ export default function TelegramOnly({
     );
   }
 
-  // Show Telegram-only message
   if (!isTelegram) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
