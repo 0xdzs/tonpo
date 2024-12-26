@@ -57,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     res.status(200).json({ message: 'Success' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Webhook error:', error);
     res.status(200).json({ error: error.message }); // Always return 200 to Telegram
   }
