@@ -24,6 +24,7 @@ export default function TelegramOnly({
       const webApp = window.Telegram?.WebApp;
       if (webApp) {
         webApp.ready();
+        webApp.expand();
         return true;
       }
 
