@@ -2,7 +2,8 @@
 
 import { Pool } from '@/types/pools';
 import { Text } from '@tremor/react';
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
+import { ArrowUpIcon, ArrowDownIcon, DocumentDuplicateIcon } from '@heroicons/react/24/solid';
+import { useState } from 'react';
 
 type SortField = 'volumeFdvRatio' | 'fdv';
 type SortDirection = 'asc' | 'desc';
@@ -39,6 +40,18 @@ interface PoolsTableProps {
 }
 
 export default function PoolsTable({ pools, sortField, sortDirection }: PoolsTableProps) {
+  const [copiedPoolId, setCopiedPoolId] = useState<string | null>(null);
+
+  const handleCopyAddress = async (poolId: string, address: string) => {
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedPoolId(poolId);
+      setTimeout(() => setCopiedPoolId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   const sortPools = (a: Pool, b: Pool) => {
     switch (sortField) {
       case 'volumeFdvRatio':
@@ -62,9 +75,22 @@ export default function PoolsTable({ pools, sortField, sortDirection }: PoolsTab
         {sortedPools.map((pool) => (
           <div key={pool.id} className="card p-4 rounded-none first:rounded-t-xl last:rounded-b-xl">
             <div className="flex justify-between items-start mb-3">
-              <Text className="font-medium text-[var(--tg-theme-text-color)]">
-                {pool.attributes.name}
-              </Text>
+              <div className="flex items-center gap-2">
+                <Text className="font-medium text-[var(--tg-theme-text-color)]">
+                  {pool.attributes.name}
+                </Text>
+                <button
+                  onClick={() => handleCopyAddress(pool.id, pool.attributes.base_token_address)}
+                  className={`p-1.5 rounded-full transition-colors ${
+                    copiedPoolId === pool.id
+                      ? 'bg-green-100 text-green-600'
+                      : 'hover:bg-[var(--tg-theme-secondary-bg-color)] text-[var(--tg-theme-hint-color)]'
+                  }`}
+                  title="Copy Contract Address"
+                >
+                  <DocumentDuplicateIcon className="h-4 w-4" />
+                </button>
+              </div>
               <div className="text-right">
                 <Text className="text-sm subtitle">Price</Text>
                 <Text className="font-medium text-[var(--tg-theme-accent-text-color)]">

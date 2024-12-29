@@ -20,6 +20,7 @@ interface PoolAttributes {
   quote_token_price_usd: string;
   name: string;
   pool_created_at: string;
+  base_token_address: string;
   volume_usd: {
     m5: string;
     h1: string;
