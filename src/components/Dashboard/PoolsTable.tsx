@@ -42,9 +42,17 @@ interface PoolsTableProps {
 export default function PoolsTable({ pools, sortField, sortDirection }: PoolsTableProps) {
   const [copiedPoolId, setCopiedPoolId] = useState<string | null>(null);
 
-  const handleCopyAddress = async (poolId: string, address: string) => {
+  const handleCopyAddress = async (poolId: string, address: string | undefined) => {
     try {
-      await navigator.clipboard.writeText(address);
+      if (!address) {
+        console.error('No address available for pool:', poolId);
+        return;
+      }
+      
+      // Remove the 'ton_' prefix if it exists
+      const cleanAddress = address.startsWith('ton_') ? address.slice(4) : address;
+      
+      await navigator.clipboard.writeText(cleanAddress);
       setCopiedPoolId(poolId);
       setTimeout(() => setCopiedPoolId(null), 2000);
     } catch (err) {

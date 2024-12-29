@@ -12,7 +12,6 @@ export const formatPoolName = (poolName: string): string => {
 };
 
 export const filterAndCombinePools = (pools: Pool[]): CombinedPool[] => {
-  // Filter out USD₮/TON pairs
   const filteredPools = pools.filter((pool: Pool) => {
     const poolName = pool.attributes.name.toLowerCase();
     return !(
@@ -22,7 +21,6 @@ export const filterAndCombinePools = (pools: Pool[]): CombinedPool[] => {
     );
   });
 
-  // Combine volumes for same pairs
   const poolMap = new Map<string, CombinedPool>();
   
   filteredPools.forEach((pool: Pool) => {
@@ -35,6 +33,11 @@ export const filterAndCombinePools = (pools: Pool[]): CombinedPool[] => {
       
       existingPool.attributes.combined_volume_usd.h24 = (existingVolume + newVolume).toString();
       existingPool.attributes.name = pairKey;
+      
+      // Keep the base token address from the pool with higher volume
+      if (newVolume > existingVolume) {
+        existingPool.attributes.base_token_address = pool.relationships.base_token.data.id;
+      }
     } else {
       poolMap.set(pairKey, {
         ...pool,
@@ -44,7 +47,8 @@ export const filterAndCombinePools = (pools: Pool[]): CombinedPool[] => {
           combined_volume_usd: {
             h24: pool.attributes.volume_usd.h24
           },
-          fee_tiers: []
+          fee_tiers: [],
+          base_token_address: pool.relationships.base_token.data.id
         }
       });
     }
