@@ -12,7 +12,7 @@ export default function DashboardTabs({
   return (
     <div className="flex items-center mb-4">
       <select
-        value={selectedFdvFilter || ''}
+        value={selectedFdvFilter || '5M'}
         onChange={(e) => onFilterChange(e.target.value as FdvFilter || null)}
         className="px-3 py-1.5 rounded-full text-xs border border-[var(--tg-theme-button-color)] bg-transparent text-[var(--tg-theme-button-color)] appearance-none cursor-pointer"
       >

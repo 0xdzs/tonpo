@@ -25,7 +25,7 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [sortField, setSortField] = useState<SortField>('volumeFdvRatio');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [selectedFdvFilter, setSelectedFdvFilter] = useState<'1M' | '5M' | '10M' | null>(null);
+  const [selectedFdvFilter, setSelectedFdvFilter] = useState<'1M' | '5M' | '10M' | null>('5M');
 
   const fetchPools = useCallback(async () => {
     setLoading(true);
