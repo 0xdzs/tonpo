@@ -8,10 +8,10 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-14">
           <Link href="/" className="flex items-center">
             <Image
-              src="/tongo_logo_text.png"
+              src="/logo/logo_blue_transparent.png"
               alt="Tonpo"
-              width={80}
-              height={24}
+              width={32}
+              height={32}
               priority
             />
           </Link>
