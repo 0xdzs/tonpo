@@ -1,6 +1,8 @@
 import { Telegraf } from 'telegraf';
 
 let bot: Telegraf | null = null;
+// Store user IDs in memory (you might want to use a database in production)
+const userIds = new Set<number>();
 
 export function getBot() {
   if (!bot) {
@@ -16,6 +18,12 @@ export function getBot() {
       bot = new Telegraf(token);
 
       bot.command('start', async (ctx) => {
+        const userId = ctx.from?.id;
+        if (userId) {
+          userIds.add(userId);
+          console.log('New user added:', userId);
+        }
+        
         console.log('Received /start command from:', ctx.from?.id);
         try {
           console.log('Sending welcome photo...');
@@ -51,4 +59,9 @@ export function getBot() {
   }
   
   return bot;
+}
+
+// Export function to get all user IDs
+export function getUserIds(): number[] {
+  return Array.from(userIds);
 } 
