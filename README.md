@@ -1,7 +1,7 @@
 Tonpo - Fell the tempo of Ton
 
 TODO:
-- add a copy pate button to copy the token's CA
+- add broadcast bot to send notifications to users
 - add a pool details page to show the pools breakdown
 - add a share button to share the token
 - integrate with telegram notifications for buy signals 
