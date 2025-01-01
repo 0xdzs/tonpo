@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getBot, getUserIds } from '@/lib/bot';
 
-export async function POST(req: Request) {
+export async function POST(_req: Request) {
   try {
     const bot = getBot();
     if (!bot) {
@@ -43,7 +43,6 @@ The Tonpo Team`;
         );
         successCount++;
         console.log('Successfully sent to user:', userId);
-        // Add delay between messages to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
         console.error(`Failed to send message to user ${userId}:`, error);
