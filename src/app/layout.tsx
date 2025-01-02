@@ -1,15 +1,13 @@
-import './globals.css'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import './globals.css'
 import Navbar from '@/components/common/Navbar'
-import BackToTop from '@/components/common/BackToTop'
-import TelegramOnly from '@/components/TelegramOnly'
-import TelegramScript from '@/components/common/TelegramScript'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
-  title: 'Tonpo 📊',
-  description: 'Track the tempo of TON ecosystem for better trading decisions 📈',
+export const metadata: Metadata = {
+  title: 'Tonpo',
+  description: 'Feel the tempo of TON',
 }
 
 export default function RootLayout({
@@ -18,22 +16,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <head>
-        <TelegramScript />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-      </head>
-      <body className={`${inter.className} safe-area-inset`}>
-        <TelegramOnly>
-          <div className="pt-safe">
-            <Navbar />
-            <main className="container mx-auto px-4 py-4">
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className={inter.className}>
+        <div className="relative flex min-h-screen flex-col">
+          <Navbar />
+          <main className="flex-1">
+            <div className="container py-6">
               {children}
-            </main>
-          </div>
-        </TelegramOnly>
-        <BackToTop />
+            </div>
+          </main>
+        </div>
       </body>
     </html>
   )
-} 
+}

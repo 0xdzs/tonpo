@@ -43,9 +43,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-    }
     fetchPools();
     return () => {
       setPools([]);
@@ -72,19 +69,28 @@ export default function Home() {
   };
 
   return (
-    <div className="p-4 pb-20 bg-[var(--tg-theme-bg-color)] min-h-screen">
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight">Top TON DEX Pools</h1>
+        <div className="flex items-center gap-4">
+          <RefreshButton onRefresh={fetchPools} isLoading={loading} />
+          <LastUpdated timestamp={lastUpdated} isLoading={loading} />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <select
             value={selectedFdvFilter || ''}
             onChange={(e) => setSelectedFdvFilter(e.target.value as '1M' | '5M' | '10M' | null)}
-            className="px-3 py-1.5 w-[120px] border border-[var(--tg-theme-button-color)] bg-transparent text-[var(--tg-theme-button-color)] appearance-none cursor-pointer text-xs"
+            className="w-full sm:w-[120px] rounded-md border bg-background px-3 py-1.5 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="">FDV Filter</option>
             <option value="1M">FDV &gt; 1M</option>
             <option value="5M">FDV &gt; 5M</option>
             <option value="10M">FDV &gt; 10M</option>
           </select>
+
           <div className="flex gap-2">
             <PoolsTable.SortButton
               field="volumeFdvRatio"
@@ -102,24 +108,19 @@ export default function Home() {
             />
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex gap-2">
-            <RefreshButton onRefresh={fetchPools} isLoading={loading} />
+
+        {loading && pools.length === 0 ? (
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
-          <LastUpdated timestamp={lastUpdated} isLoading={loading} />
-        </div>
+        ) : (
+          <PoolsTable 
+            pools={filterHighFdvPools(pools)} 
+            sortField={sortField}
+            sortDirection={sortDirection}
+          />
+        )}
       </div>
-      {loading && pools.length === 0 ? (
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--tg-theme-button-color)]"></div>
-        </div>
-      ) : (
-        <PoolsTable 
-          pools={filterHighFdvPools(pools)} 
-          sortField={sortField}
-          sortDirection={sortDirection}
-        />
-      )}
     </div>
   );
-} 
+}
