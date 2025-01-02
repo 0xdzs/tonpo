@@ -1,6 +1,7 @@
 Tonpo - Fell the tempo of Ton
 
 TODO:
+- Testing with windsurf
 - add broadcast bot to send notifications to users
 - add a pool details page to show the pools breakdown
 - add a share button to share the token
